@@ -34,3 +34,8 @@ LockIn Clock is a modern mood-based motivational flip clock web application buil
 ```bash
 npm install
 npm run dev
+
+
+## Live Demo
+
+https://lockin-clock.onrender.com
