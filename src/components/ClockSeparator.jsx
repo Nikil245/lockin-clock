@@ -8,7 +8,7 @@ export default function ClockSeparator({ accent }) {
 
   return (
     <div
-      className="flex h-20 w-3 shrink-0 flex-col items-center justify-center gap-3 sm:h-32 sm:w-6 sm:gap-4 md:h-40 md:w-8 xl:h-52 xl:w-10"
+      className="mobile-landscape-clock-separator flex h-20 w-3 shrink-0 flex-col items-center justify-center gap-3 sm:h-32 sm:w-6 sm:gap-4 md:h-40 md:w-8 xl:h-52 xl:w-10"
       aria-hidden="true"
     >
       {[0, 1].map((dot) => (

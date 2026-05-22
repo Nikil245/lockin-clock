@@ -14,19 +14,11 @@ export default function ShortcutHintPanel({ accent, isLockedIn }) {
   const [isOpen, setIsOpen] = useState(false);
 
   if (isLockedIn) {
-    return (
-      <motion.div
-        initial={{ y: 10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs font-semibold text-white/42 shadow-glow backdrop-blur-xl sm:left-auto sm:right-5 sm:translate-x-0"
-      >
-        Press <span style={{ color: accent }}>L</span> to exit Lock-in Mode
-      </motion.div>
-    );
+    return null;
   }
 
   return (
-    <div className="fixed bottom-4 left-4 z-50">
+    <div className="shortcut-ui fixed bottom-4 left-4 z-50 hidden lg:block">
       <button
         type="button"
         onClick={() => setIsOpen((value) => !value)}

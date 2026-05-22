@@ -24,6 +24,13 @@ export function useClock(is24Hour) {
       minutes: pad(now.getMinutes()),
       seconds: pad(now.getSeconds()),
       meridiem,
+      compactDate: `${now.toLocaleDateString(undefined, {
+        weekday: "long",
+      })} ${now.toLocaleDateString(undefined, {
+        day: "numeric",
+      })} ${now.toLocaleDateString(undefined, {
+        month: "short",
+      })}`,
       date: now.toLocaleDateString(undefined, {
         weekday: "long",
         month: "short",

@@ -253,44 +253,62 @@ export default function PomodoroTimer({
   }, [keyboardCommand?.id]);
 
   return (
-    <section className="flex w-full max-w-5xl flex-col items-center gap-6">
+    <section
+      className={`flex w-full max-w-5xl flex-col items-center ${
+        isLockedIn ? "mobile-lockin-pomodoro gap-3 sm:gap-4 md:gap-6" : "gap-6"
+      }`}
+    >
       <motion.div
         key={pulse}
         initial={{ boxShadow: `0 0 0px ${accent}00` }}
         animate={{ boxShadow: [`0 0 0px ${accent}00`, `0 0 54px ${accent}55`, `0 0 0px ${accent}00`] }}
         transition={{ duration: 1.1, ease: "easeOut" }}
-        className="relative w-full max-w-3xl overflow-hidden rounded-lg border border-white/10 bg-white/[0.075] px-5 py-6 shadow-glass backdrop-blur-xl sm:px-8 sm:py-8"
+        className={`mobile-landscape-pomodoro-card relative w-full overflow-hidden rounded-lg border border-white/10 bg-white/[0.075] shadow-glass backdrop-blur-xl ${
+          isLockedIn
+            ? "mobile-lockin-pomodoro-card max-w-2xl px-4 py-4 sm:px-5 sm:py-5 md:max-w-3xl md:px-8 md:py-8"
+            : "max-w-3xl px-5 py-6 sm:px-8 sm:py-8"
+        }`}
       >
         <div
           className="absolute inset-x-0 top-0 h-px opacity-80"
           style={{ backgroundColor: accent }}
         />
 
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div
+          className={`mobile-landscape-pomodoro-header flex flex-wrap items-center justify-between gap-3 ${
+            isLockedIn ? "mobile-lockin-pomodoro-header mb-3 sm:mb-4 md:mb-6" : "mb-6"
+          }`}
+        >
           <div className="flex items-center gap-3">
             <div
-              className="flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-black/20"
+              className={`flex items-center justify-center rounded-lg border border-white/10 bg-black/20 ${
+                isLockedIn ? "h-9 w-9 sm:h-10 sm:w-10 md:h-11 md:w-11" : "h-11 w-11"
+              }`}
               style={{ color: accent }}
             >
               <SessionIcon size={21} />
             </div>
             <div>
-              <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-white/45">
+              <p className="text-[0.62rem] font-bold uppercase tracking-[0.22em] text-white/45 sm:text-[0.68rem]">
                 Pomodoro Mode
               </p>
-              <h2 className="text-xl font-black text-white sm:text-2xl">
+              <h2 className="text-lg font-black text-white sm:text-xl md:text-2xl">
                 {SESSION_LABELS[safeSessionType]}
               </h2>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm font-semibold text-white/72">
+          <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/20 px-2.5 py-1.5 text-xs font-semibold text-white/72 sm:px-3 sm:py-2 sm:text-sm">
             <Bell size={16} style={{ color: accent }} />
             <span>{isRunning ? "Running" : hasStarted ? "Paused" : "Ready"}</span>
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-5">
+        <div
+          className={`mobile-landscape-pomodoro-body flex flex-col items-center ${
+            isLockedIn ? "mobile-lockin-pomodoro-body gap-3 sm:gap-4 md:gap-5" : "gap-5"
+          }`}
+        >
           <AnimatePresence mode="wait">
             <motion.div
               key={`${safeSessionType}-${formatTime(remainingSeconds)}`}
@@ -298,7 +316,11 @@ export default function PomodoroTimer({
               animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
               exit={{ y: -12, opacity: 0, filter: "blur(8px)" }}
               transition={{ duration: 0.28, ease: "easeOut" }}
-              className="font-mono text-[4.5rem] font-black leading-none tracking-normal text-white drop-shadow-2xl sm:text-[7rem] md:text-[8.5rem]"
+              className={`mobile-landscape-pomodoro-timer font-mono font-black leading-none tracking-normal text-white drop-shadow-2xl ${
+                isLockedIn
+                  ? "mobile-lockin-pomodoro-timer text-[3.5rem] sm:text-[4.75rem] md:text-[8.5rem]"
+                  : "text-[4.5rem] sm:text-[7rem] md:text-[8.5rem]"
+              }`}
             >
               {formatTime(remainingSeconds)}
             </motion.div>

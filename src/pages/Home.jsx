@@ -248,7 +248,9 @@ export default function Home() {
 
   return (
     <main
-      className="relative min-h-screen overflow-x-hidden text-white"
+      className={`relative min-h-[100dvh] overflow-x-hidden text-white ${
+        safeLockedIn ? "max-h-[100dvh] overflow-hidden" : ""
+      }`}
       style={{ background: theme.gradient }}
     >
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:56px_56px] opacity-35" />
@@ -259,7 +261,13 @@ export default function Home() {
         transition={{ duration: 0.35, ease: "easeOut" }}
       />
 
-      <div className="relative z-10 flex min-h-screen flex-col">
+      <div
+        className={`relative z-10 flex flex-col ${
+          safeLockedIn
+            ? "h-[100dvh] max-h-[100dvh] overflow-hidden"
+            : "min-h-[100dvh]"
+        }`}
+      >
         <AnimatePresence initial={false}>
           {!safeLockedIn && (
             <motion.div
@@ -288,10 +296,12 @@ export default function Home() {
         <AnimatePresence>
           {safeLockedIn && (
             <motion.div
-              initial={{ y: -12, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -12, opacity: 0 }}
-              className="fixed right-4 top-4 z-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className={`mobile-lockin-exit fixed right-3 top-3 z-50 md:right-4 md:top-4 ${
+                safeMode === "clock" ? "clock-portrait-lockin-exit" : ""
+              }`}
             >
               <LockInToggle
                 isLockedIn={safeLockedIn}
@@ -307,10 +317,14 @@ export default function Home() {
           initial={{ opacity: 0.72 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className={`flex flex-1 flex-col items-center justify-center px-4 pb-8 sm:px-6 lg:px-8 ${
+          className={`mobile-lockin-stage flex flex-1 flex-col items-center justify-center px-4 sm:px-6 lg:px-8 ${
             safeLockedIn
-              ? "gap-6 pt-16 sm:gap-8"
-              : "gap-8 pt-2 sm:gap-10"
+              ? `mobile-lockin-active-stage ${
+                  safeMode === "pomodoro" ? "pomodoro-lockin-active-stage" : ""
+                } h-full max-h-[100dvh] gap-3 overflow-hidden py-3 sm:gap-4 sm:py-4 md:gap-8 md:py-8 lg:pb-8 lg:pt-16`
+              : `${
+                  safeMode === "clock" ? "mobile-normal-clock-stage" : ""
+                } gap-8 pb-8 pt-2 sm:gap-10`
           }`}
         >
           <AnimatePresence initial={false} mode="wait">
@@ -320,10 +334,14 @@ export default function Home() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -18, opacity: 0 }}
               transition={{ duration: 0.38, ease: "easeOut" }}
-              className="flex w-full justify-center"
+              className="mobile-lockin-primary flex w-full justify-center"
             >
               {safeMode === "clock" ? (
-                <FlipClock is24Hour={is24Hour} accent={theme.accent} />
+                <FlipClock
+                  is24Hour={is24Hour}
+                  accent={theme.accent}
+                  isLockedIn={safeLockedIn}
+                />
               ) : (
                 <PomodoroTimer
                   accent={theme.accent}
@@ -346,19 +364,6 @@ export default function Home() {
           />
         </motion.div>
       </div>
-
-      <AnimatePresence>
-        {!safeLockedIn && (
-          <motion.footer
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 8 }}
-            className="pointer-events-none fixed bottom-4 right-4 z-40 hidden rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs font-semibold text-white/38 shadow-glow backdrop-blur-xl md:block"
-          >
-            LockIn Clock · Local-first focus studio
-          </motion.footer>
-        )}
-      </AnimatePresence>
 
       <FavoritesPanel
         isOpen={isFavoritesOpen}
