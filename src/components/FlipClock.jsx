@@ -93,7 +93,7 @@ export default function FlipClock({ is24Hour, accent, isLockedIn = false }) {
           </div>
         </div>
 
-        <div className="mobile-landscape-label-row flex items-center justify-center gap-1.5 sm:gap-4 md:gap-5">
+        <div className="mobile-landscape-label-row flex items-center justify-center gap-1 sm:gap-4 md:gap-5 ">
           <UnitLabel>Hours</UnitLabel>
           <div className="mobile-landscape-label-spacer w-3 shrink-0 sm:w-6 md:w-8 xl:w-10" />
           <UnitLabel>Minutes</UnitLabel>
