@@ -72,7 +72,7 @@ const getTimeParts = (seconds) => {
 
 const AnimatedPomodoroPart = memo(function AnimatedPomodoroPart({ value }) {
   return (
-    <span className="inline-flex min-w-[2ch] justify-center align-baseline bg-transparent shadow-none">
+    <span className="inline-flex w-auto align-baseline bg-transparent shadow-none">
       <AnimatePresence initial={false} mode="wait">
         <motion.span
           key={value}
@@ -80,7 +80,7 @@ const AnimatedPomodoroPart = memo(function AnimatedPomodoroPart({ value }) {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -10, opacity: 0 }}
           transition={{ duration: 0.24, ease: "easeOut" }}
-          className="inline-block bg-transparent shadow-none"
+          className="inline-flex w-auto bg-transparent shadow-none"
         >
           {value}
         </motion.span>
@@ -334,7 +334,7 @@ export default function PomodoroTimer({
       >
         <div className="relative flex w-full flex-col items-center">
           <div
-            className={`relative grid aspect-square place-items-center ${
+            className={`mobile-lockin-pomodoro-ring relative grid aspect-square place-items-center ${
               isLockedIn
                 ? "w-[min(94vw,48rem)]"
                 : "w-[min(80vw,21rem)] sm:w-[min(50vw,25rem)]"

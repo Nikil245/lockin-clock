@@ -4,7 +4,7 @@ import { useClock } from "../hooks/useClock.js";
 
 const AnimatedClockPart = memo(function AnimatedClockPart({ value }) {
   return (
-    <span className="inline-flex min-w-[2ch] justify-center align-baseline bg-transparent shadow-none">
+    <span className="inline-flex w-auto align-baseline bg-transparent shadow-none">
       <AnimatePresence initial={false} mode="wait">
         <motion.span
           key={value}
@@ -12,7 +12,7 @@ const AnimatedClockPart = memo(function AnimatedClockPart({ value }) {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -8, opacity: 0 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          className="inline-block bg-transparent shadow-none"
+          className="inline-flex w-auto bg-transparent shadow-none"
         >
           {value}
         </motion.span>
