@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Bell, Coffee, Flame, TimerReset } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { Coffee, Flame, TimerReset } from "lucide-react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage.js";
 import PomodoroControls from "./PomodoroControls.jsx";
 
@@ -30,7 +30,9 @@ const todayKey = () => {
   const day = String(date.getDate()).padStart(2, "0");
   return `${date.getFullYear()}-${month}-${day}`;
 };
+
 const minutesToSeconds = (minutes) => Math.max(1, Number(minutes) || 1) * 60;
+
 const getInitialRemainingSeconds = () => {
   if (typeof window === "undefined") {
     return minutesToSeconds(defaultSettings.focus);
@@ -58,11 +60,34 @@ const getInitialRemainingSeconds = () => {
     return minutesToSeconds(defaultSettings.focus);
   }
 };
-const formatTime = (seconds) => {
+
+const getTimeParts = (seconds) => {
   const minutes = Math.floor(seconds / 60);
   const nextSeconds = seconds % 60;
-  return `${String(minutes).padStart(2, "0")}:${String(nextSeconds).padStart(2, "0")}`;
+  return {
+    minutes: String(minutes),
+    seconds: String(nextSeconds).padStart(2, "0"),
+  };
 };
+
+const AnimatedPomodoroPart = memo(function AnimatedPomodoroPart({ value }) {
+  return (
+    <span className="inline-flex min-w-[2ch] justify-center align-baseline bg-transparent shadow-none">
+      <AnimatePresence initial={false} mode="wait">
+        <motion.span
+          key={value}
+          initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -10, opacity: 0 }}
+          transition={{ duration: 0.24, ease: "easeOut" }}
+          className="inline-block bg-transparent shadow-none"
+        >
+          {value}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
+});
 
 export default function PomodoroTimer({
   accent,
@@ -111,6 +136,10 @@ export default function PomodoroTimer({
   );
   const hasStarted = hasActiveSession || remainingSeconds < currentDuration;
   const SessionIcon = SESSION_ICONS[safeSessionType];
+  const ringRadius = 52;
+  const ringCircumference = 2 * Math.PI * ringRadius;
+  const ringOffset = ringCircumference - (progress / 100) * ringCircumference;
+  const timeParts = getTimeParts(remainingSeconds);
 
   useEffect(() => {
     const key = todayKey();
@@ -131,7 +160,10 @@ export default function PomodoroTimer({
     setPulse((value) => value + 1);
   };
 
-  const finishFocusSession = ({ shouldTrack = true, trackedMinutes = cleanSettings.focus } = {}) => {
+  const finishFocusSession = ({
+    shouldTrack = true,
+    trackedMinutes = cleanSettings.focus,
+  } = {}) => {
     const nextCycleCount = cycleCount + 1;
 
     if (shouldTrack) {
@@ -254,123 +286,176 @@ export default function PomodoroTimer({
 
   return (
     <section
-      className={`flex w-full max-w-5xl flex-col items-center ${
-        isLockedIn ? "mobile-lockin-pomodoro gap-3 sm:gap-4 md:gap-6" : "gap-6"
+      className={`flex w-full flex-col items-center ${
+        isLockedIn
+          ? "mobile-lockin-pomodoro max-w-6xl gap-4 sm:gap-5"
+          : "max-w-5xl gap-4 sm:gap-5"
       }`}
     >
+      {!isLockedIn && (
+        <div className="pomodoro-glass-lite flex w-full max-w-[26rem] items-center justify-center rounded-full p-1.5">
+          {validSessionTypes.map((type) => {
+            const isSelected = safeSessionType === type;
+
+            return (
+              <button
+                key={type}
+                type="button"
+                onClick={() => switchSession(type)}
+                className={`min-w-0 flex-1 rounded-full border border-transparent px-3 py-2 text-center text-[0.72rem] font-black uppercase tracking-[0.08em] text-white/68 transition hover:bg-white/[0.08] hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30 sm:text-xs ${
+                  isSelected ? "pomodoro-glass-lite-active text-white" : ""
+                }`}
+                style={{
+                  boxShadow: isSelected
+                    ? `inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 0 18px ${accent}16`
+                    : undefined,
+                }}
+                aria-pressed={isSelected}
+              >
+                {SESSION_LABELS[type]}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       <motion.div
         key={pulse}
         initial={{ boxShadow: `0 0 0px ${accent}00` }}
-        animate={{ boxShadow: [`0 0 0px ${accent}00`, `0 0 54px ${accent}55`, `0 0 0px ${accent}00`] }}
+        animate={{
+          boxShadow: [
+            `0 0 0px ${accent}00`,
+            `0 0 62px ${accent}55`,
+            `0 0 0px ${accent}00`,
+          ],
+        }}
         transition={{ duration: 1.1, ease: "easeOut" }}
-        className={`mobile-landscape-pomodoro-card relative w-full overflow-hidden rounded-lg border border-white/10 bg-white/[0.075] shadow-glass backdrop-blur-xl ${
-          isLockedIn
-            ? "mobile-lockin-pomodoro-card max-w-2xl px-4 py-4 sm:px-5 sm:py-5 md:max-w-3xl md:px-8 md:py-8"
-            : "max-w-3xl px-5 py-6 sm:px-8 sm:py-8"
-        }`}
+        className="mobile-landscape-pomodoro-card relative flex w-full flex-col items-center overflow-visible"
       >
-        <div
-          className="absolute inset-x-0 top-0 h-px opacity-80"
-          style={{ backgroundColor: accent }}
-        />
+        <div className="relative flex w-full flex-col items-center">
+          <div
+            className={`relative grid aspect-square place-items-center ${
+              isLockedIn
+                ? "w-[min(94vw,48rem)]"
+                : "w-[min(80vw,21rem)] sm:w-[min(50vw,25rem)]"
+            }`}
+          >
+            {!isLockedIn && (
+              <svg
+                className="absolute inset-0 h-full w-full -rotate-90 overflow-visible"
+                viewBox="0 0 120 120"
+                aria-hidden="true"
+              >
+                <circle
+                  cx="60"
+                  cy="60"
+                  r={ringRadius}
+                  fill="none"
+                  stroke="rgba(255,255,255,0.16)"
+                  strokeWidth="2.6"
+                />
+                <motion.circle
+                  cx="60"
+                  cy="60"
+                  r={ringRadius}
+                  fill="none"
+                  stroke="#ffffff"
+                  strokeWidth="3.6"
+                  strokeLinecap="round"
+                  strokeDasharray={ringCircumference}
+                  animate={{ strokeDashoffset: ringOffset }}
+                  transition={{ duration: 0.38, ease: "easeOut" }}
+                  style={{
+                    filter: `drop-shadow(0 0 18px ${accent}66)`,
+                  }}
+                />
+              </svg>
+            )}
 
-        <div
-          className={`mobile-landscape-pomodoro-header flex flex-wrap items-center justify-between gap-3 ${
-            isLockedIn ? "mobile-lockin-pomodoro-header mb-3 sm:mb-4 md:mb-6" : "mb-6"
-          }`}
-        >
-          <div className="flex items-center gap-3">
-            <div
-              className={`flex items-center justify-center rounded-lg border border-white/10 bg-black/20 ${
-                isLockedIn ? "h-9 w-9 sm:h-10 sm:w-10 md:h-11 md:w-11" : "h-11 w-11"
-              }`}
-              style={{ color: accent }}
-            >
-              <SessionIcon size={21} />
-            </div>
-            <div>
-              <p className="text-[0.62rem] font-bold uppercase tracking-[0.22em] text-white/45 sm:text-[0.68rem]">
-                Pomodoro Mode
-              </p>
-              <h2 className="text-lg font-black text-white sm:text-xl md:text-2xl">
-                {SESSION_LABELS[safeSessionType]}
-              </h2>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/20 px-2.5 py-1.5 text-xs font-semibold text-white/72 sm:px-3 sm:py-2 sm:text-sm">
-            <Bell size={16} style={{ color: accent }} />
-            <span>{isRunning ? "Running" : hasStarted ? "Paused" : "Ready"}</span>
-          </div>
-        </div>
-
-        <div
-          className={`mobile-landscape-pomodoro-body flex flex-col items-center ${
-            isLockedIn ? "mobile-lockin-pomodoro-body gap-3 sm:gap-4 md:gap-5" : "gap-5"
-          }`}
-        >
-          <AnimatePresence mode="wait">
             <motion.div
-              key={`${safeSessionType}-${formatTime(remainingSeconds)}`}
-              initial={{ y: 12, opacity: 0, filter: "blur(8px)" }}
-              animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-              exit={{ y: -12, opacity: 0, filter: "blur(8px)" }}
-              transition={{ duration: 0.28, ease: "easeOut" }}
-              className={`mobile-landscape-pomodoro-timer font-mono font-black leading-none tracking-normal text-white drop-shadow-2xl ${
+              className={`absolute rounded-full bg-white/[0.035] ${
                 isLockedIn
-                  ? "mobile-lockin-pomodoro-timer text-[3.5rem] sm:text-[4.75rem] md:text-[8.5rem]"
-                  : "text-[4.5rem] sm:text-[7rem] md:text-[8.5rem]"
+                  ? "inset-[14%] blur-2xl"
+                  : "inset-[18%] border border-white/10 backdrop-blur-[2px]"
               }`}
-            >
-              {formatTime(remainingSeconds)}
-            </motion.div>
-          </AnimatePresence>
-
-          <div className="h-2 w-full overflow-hidden rounded-full bg-black/35">
-            <motion.div
-              className="h-full rounded-full"
-              style={{ backgroundColor: accent, boxShadow: `0 0 24px ${accent}` }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
+              animate={{
+                opacity: isRunning ? 0.74 : 0.48,
+                scale: isRunning ? 1.03 : 1,
+              }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
             />
+
+            <div className="relative z-10 flex flex-col items-center justify-center text-center">
+              <div
+                className={`pomodoro-glass-lite mb-3 flex items-center gap-2 rounded-full px-3 py-1.5 text-[0.66rem] font-black uppercase tracking-[0.12em] text-white/76 ${
+                  isLockedIn ? "sm:text-xs" : ""
+                }`}
+              >
+                <SessionIcon size={15} style={{ color: accent }} />
+                <span>{SESSION_LABELS[safeSessionType]}</span>
+              </div>
+
+              <div
+                className={`mobile-landscape-pomodoro-timer timer-display font-display font-black leading-none tracking-normal text-white ${
+                  isLockedIn
+                    ? "mobile-lockin-pomodoro-timer text-[clamp(5rem,20vw,13.5rem)]"
+                    : "text-[clamp(3.8rem,11.5vw,6.2rem)] sm:text-[clamp(4.7rem,7.4vw,6.6rem)]"
+                }`}
+                style={{
+                  textShadow: `0 0 38px ${accent}44, 0 18px 70px rgba(0, 0, 0, 0.55)`,
+                }}
+                aria-live="polite"
+                aria-label={`${timeParts.minutes}:${timeParts.seconds}`}
+              >
+                <AnimatedPomodoroPart value={timeParts.minutes} />
+                <span aria-hidden="true">:</span>
+                <AnimatedPomodoroPart value={timeParts.seconds} />
+              </div>
+
+              <p className="mt-2 text-[0.65rem] font-black uppercase tracking-[0.2em] text-white/76">
+                {safeSessionType === "focus" ? "Focus Time" : "Break Time"}
+              </p>
+            </div>
           </div>
 
           {!isLockedIn && (
-            <PomodoroControls
-              isRunning={isRunning}
-              hasStarted={hasStarted}
-              onStart={startOrPauseSession}
-              onPause={() => setIsRunning(false)}
-              onReset={resetSession}
-              onSkip={skipSession}
-              accent={accent}
-            />
+            <div className="pomodoro-glass-lite mt-3 rounded-full p-1.5 sm:mt-5">
+              <PomodoroControls
+                isRunning={isRunning}
+                hasStarted={hasStarted}
+                onStart={startOrPauseSession}
+                onPause={() => setIsRunning(false)}
+                onReset={resetSession}
+                onSkip={skipSession}
+                accent={accent}
+              />
+            </div>
+          )}
+
+          {!isLockedIn && (
+            <div className="mt-4 grid w-full max-w-3xl gap-3 text-center sm:mt-5 sm:grid-cols-3">
+              <div className="pomodoro-glass-lite rounded-full px-4 py-3">
+                <p className="text-[0.62rem] font-black uppercase tracking-[0.16em] text-white/48">
+                  Today
+                </p>
+                <p className="text-2xl font-black text-white">{completedToday}</p>
+              </div>
+              <div className="pomodoro-glass-lite rounded-full px-4 py-3">
+                <p className="text-[0.62rem] font-black uppercase tracking-[0.16em] text-white/48">
+                  Next
+                </p>
+                <p className="text-lg font-black text-white">{upcomingSession}</p>
+              </div>
+              <div className="pomodoro-glass-lite rounded-full px-4 py-3">
+                <p className="text-[0.62rem] font-black uppercase tracking-[0.16em] text-white/48">
+                  Cycle
+                </p>
+                <p className="text-lg font-black text-white">{cycleCount} / 4</p>
+              </div>
+            </div>
           )}
         </div>
       </motion.div>
-
-      {!isLockedIn && (
-      <div className="grid w-full max-w-3xl gap-3 text-center sm:grid-cols-3">
-        <div className="rounded-lg border border-white/10 bg-white/[0.065] px-4 py-3 backdrop-blur-xl">
-          <p className="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-white/42">
-            Today
-          </p>
-          <p className="text-2xl font-black text-white">{completedToday}</p>
-        </div>
-        <div className="rounded-lg border border-white/10 bg-white/[0.065] px-4 py-3 backdrop-blur-xl">
-          <p className="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-white/42">
-            Next
-          </p>
-          <p className="text-lg font-black text-white">{upcomingSession}</p>
-        </div>
-        <div className="rounded-lg border border-white/10 bg-white/[0.065] px-4 py-3 backdrop-blur-xl">
-          <p className="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-white/42">
-            Cycle
-          </p>
-          <p className="text-lg font-black text-white">{cycleCount} / 4</p>
-        </div>
-      </div>
-      )}
     </section>
   );
 }

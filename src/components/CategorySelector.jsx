@@ -30,15 +30,15 @@ export default function CategorySelector({
   };
 
   return (
-    <div ref={containerRef} className="relative min-w-0">
+    <div ref={containerRef} className="relative shrink-0">
       <motion.button
         type="button"
         whileHover={{ scale: 1.015, filter: "brightness(1.12)" }}
         whileTap={{ scale: 0.985 }}
         onClick={() => setIsOpen((value) => !value)}
-        className="flex h-10 min-w-0 items-center gap-2 rounded-lg border bg-white/[0.075] px-3 text-sm text-white/88 shadow-glow backdrop-blur-xl transition focus:outline-none focus:ring-2 focus:ring-white/30 sm:min-w-56"
+        className="flex h-10 max-w-[12.25rem] shrink-0 items-center gap-2 rounded-full border bg-white/[0.1] px-3 text-sm text-white/88 shadow-glow backdrop-blur-md transition focus:outline-none focus:ring-2 focus:ring-white/30 sm:max-w-none sm:min-w-52"
         style={{
-          borderColor: isOpen ? `${accent}a8` : "rgba(255, 255, 255, 0.1)",
+          borderColor: isOpen ? `${accent}a8` : "rgba(255, 255, 255, 0.12)",
           boxShadow: isOpen ? `0 0 28px ${accent}22` : undefined,
         }}
         aria-expanded={isOpen}
@@ -54,7 +54,7 @@ export default function CategorySelector({
             boxShadow: `0 0 14px ${selectedTheme?.accent ?? accent}`,
           }}
         />
-        <span className="max-w-[10.5rem] truncate font-semibold sm:max-w-[13rem]">
+        <span className="max-w-[8.5rem] truncate font-semibold sm:max-w-[12rem]">
           {selectedTheme?.label ?? "Study Motivation"}
         </span>
         <motion.span

@@ -20,7 +20,7 @@ export function useClock(is24Hour) {
         : rawHours % 12;
 
     return {
-      hours: pad(displayHours),
+      hours: String(displayHours),
       minutes: pad(now.getMinutes()),
       seconds: pad(now.getSeconds()),
       meridiem,

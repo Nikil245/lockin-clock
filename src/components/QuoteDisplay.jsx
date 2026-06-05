@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Heart, Plus, Quote } from "lucide-react";
+import { Library, Plus, Quote } from "lucide-react";
 import FavoriteButton from "./FavoriteButton.jsx";
 
 export default function QuoteDisplay({
@@ -13,83 +13,80 @@ export default function QuoteDisplay({
   isLockedIn = false,
 }) {
   return (
-    <section className={`w-full ${isLockedIn ? "mobile-lockin-quote max-w-3xl md:max-w-4xl" : "max-w-4xl"}`}>
+    <section
+      className={`w-full ${
+        isLockedIn ? "mobile-lockin-quote max-w-2xl" : "max-w-3xl"
+      }`}
+    >
       <div
-        className={`mobile-landscape-quote-card relative overflow-hidden rounded-lg border border-white/10 bg-white/[0.075] shadow-glass backdrop-blur-xl ${
+        className={`quote-glass-card mobile-landscape-quote-card relative overflow-hidden text-center ${
           isLockedIn
-            ? "mobile-lockin-quote-card px-3 py-3 sm:px-5 sm:py-4 md:px-8 md:py-7"
-            : "px-5 py-5 sm:px-8 sm:py-7"
+            ? "mobile-lockin-quote-card px-5 py-6 sm:px-8 sm:py-7"
+            : "px-4 pb-5 pt-3 sm:px-7 sm:pb-6 sm:pt-4"
         }`}
       >
-        <div
-          className="absolute inset-x-0 top-0 h-px opacity-80"
-          style={{ backgroundColor: accent }}
-        />
-        <div className="flex items-start gap-2.5 sm:gap-4">
+        <div className="relative z-10">
           <div
-            className={`mobile-landscape-quote-icon mt-1 flex shrink-0 items-center justify-center rounded-lg border border-white/10 bg-black/20 ${
-              isLockedIn ? "h-8 w-8 sm:h-10 sm:w-10" : "h-10 w-10"
+            className={`mobile-landscape-quote-category mb-5 flex flex-wrap items-center justify-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-white/72 ${
+              isLockedIn ? "mobile-lockin-quote-category" : ""
             }`}
-            style={{ color: accent }}
           >
-            <Quote size={isLockedIn ? 17 : 20} />
-          </div>
-          <div className="min-w-0 flex-1">
-            <div
-              className={`mobile-landscape-quote-category flex flex-wrap items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-white/48 ${
-                isLockedIn ? "mobile-lockin-quote-category mb-1.5 sm:mb-2.5" : "mb-3"
-              }`}
-            >
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.1] px-3 py-1.5 backdrop-blur-md">
+              <Quote size={14} style={{ color: accent }} />
               <span>{category}</span>
-            </div>
-            <AnimatePresence initial={false} mode="wait">
-              <motion.p
-                key={quote}
-                initial={{ y: 12, opacity: 0, filter: "blur(8px)" }}
-                animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-                exit={{ y: -12, opacity: 0, filter: "blur(8px)" }}
-                transition={{ duration: 0.45, ease: "easeOut" }}
-                className={`mobile-landscape-quote-text text-balance font-semibold text-white ${
-                  isLockedIn
-                    ? "mobile-lockin-quote-text min-h-0 text-base leading-snug sm:text-xl sm:leading-relaxed md:min-h-16 md:text-2xl"
-                    : "min-h-16 text-xl leading-relaxed sm:text-2xl"
-                }`}
-              >
-                {quote}
-              </motion.p>
-            </AnimatePresence>
+            </span>
 
             {!isLockedIn && (
-              <div className="mt-5 flex flex-wrap items-center gap-2">
+              <div className="inline-flex items-center gap-1.5">
                 <button
                   type="button"
                   onClick={onOpenFavorites}
                   aria-label="Open favorite quotes"
-                  className="flex h-10 items-center gap-2 rounded-lg border border-white/10 bg-black/20 px-3 text-sm font-bold text-white/76 transition hover:bg-white/[0.1] focus:outline-none focus:ring-2 focus:ring-white/30"
+                  title="Favorites"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/12 bg-white/[0.1] text-white/76 transition hover:bg-white/[0.16] focus:outline-none focus:ring-2 focus:ring-white/30"
                 >
-                  <Heart size={17} style={{ color: accent }} />
-                  Favorites
+                  <Library size={16} style={{ color: accent }} />
                 </button>
                 <button
                   type="button"
                   onClick={onOpenAddQuote}
                   aria-label="Add a custom quote"
-                  className="flex h-10 items-center gap-2 rounded-lg border border-white/10 bg-black/20 px-3 text-sm font-bold text-white/76 transition hover:bg-white/[0.1] focus:outline-none focus:ring-2 focus:ring-white/30"
+                  title="Add Quote"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/12 bg-white/[0.1] text-white/76 transition hover:bg-white/[0.16] focus:outline-none focus:ring-2 focus:ring-white/30"
                 >
-                  <Plus size={17} style={{ color: accent }} />
-                  Add Quote
+                  <Plus size={16} style={{ color: accent }} />
                 </button>
+                <FavoriteButton
+                  isFavorite={isFavorite}
+                  onToggle={onToggleFavorite}
+                  accent={accent}
+                />
               </div>
             )}
           </div>
 
-          {!isLockedIn && (
-            <FavoriteButton
-              isFavorite={isFavorite}
-              onToggle={onToggleFavorite}
-              accent={accent}
-            />
-          )}
+          <AnimatePresence initial={false} mode="wait">
+            <motion.p
+              key={quote}
+              initial={{ y: 12, opacity: 0, filter: "blur(8px)" }}
+              animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+              exit={{ y: -12, opacity: 0, filter: "blur(8px)" }}
+              transition={{ duration: 0.45, ease: "easeOut" }}
+              className={`mobile-landscape-quote-text mx-auto text-balance italic text-white ${
+                isLockedIn
+                  ? "mobile-lockin-quote-text max-w-xl text-[clamp(1rem,2vw,1.35rem)] font-semibold leading-relaxed"
+                  : "min-h-12 max-w-2xl text-[clamp(1rem,2.2vw,1.35rem)] font-semibold leading-relaxed"
+              }`}
+              style={{ textShadow: "0 2px 12px rgba(0, 0, 0, 0.34)" }}
+            >
+              "{quote}"
+            </motion.p>
+          </AnimatePresence>
+
+          <div className="mt-5 flex justify-center gap-3">
+            <span className="h-px w-9 bg-white/36" />
+            <span className="h-px w-9 bg-white/18" />
+          </div>
         </div>
       </div>
     </section>

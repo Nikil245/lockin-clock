@@ -1,14 +1,15 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useMemo, useState } from "react";
+import ClockDisplay from "../components/ClockDisplay.jsx";
 import CustomQuoteForm from "../components/CustomQuoteForm.jsx";
 import FavoritesPanel from "../components/FavoritesPanel.jsx";
-import FlipClock from "../components/FlipClock.jsx";
 import LockInToggle from "../components/LockInToggle.jsx";
 import Navbar from "../components/Navbar.jsx";
 import PomodoroTimer from "../components/PomodoroTimer.jsx";
 import QuoteDisplay from "../components/QuoteDisplay.jsx";
 import ShortcutHintPanel from "../components/ShortcutHintPanel.jsx";
 import StatsPanel from "../components/StatsPanel.jsx";
+import studyRoomBackground from "../assets/study-room-background.svg";
 import { quotes } from "../data/quotes.js";
 import { defaultThemeKey, themes } from "../data/themes.js";
 import { useFocusStats } from "../hooks/useFocusStats.js";
@@ -248,16 +249,20 @@ export default function Home() {
 
   return (
     <main
-      className={`relative min-h-[100dvh] overflow-x-hidden text-white ${
+      className={`relative min-h-[100dvh] overflow-x-hidden bg-[#120b1f] text-white ${
         safeLockedIn ? "max-h-[100dvh] overflow-hidden" : ""
       }`}
-      style={{ background: theme.gradient }}
+      style={{ "--lockin-accent": theme.accent }}
     >
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:56px_56px] opacity-35" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.28)_58%,rgba(0,0,0,0.62)_100%)]" />
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat brightness-[1.18] saturate-[1.12]"
+        style={{ backgroundImage: `url(${studyRoomBackground})` }}
+      />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.04)_0%,rgba(19,12,32,0.1)_48%,rgba(4,3,9,0.34)_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(26,16,39,0.08)_0%,rgba(14,10,25,0.03)_48%,rgba(8,5,14,0.2)_100%)]" />
       <motion.div
         className="pointer-events-none absolute inset-0 bg-black"
-        animate={{ opacity: safeLockedIn ? 0.28 : 0 }}
+        animate={{ opacity: safeLockedIn ? 0.12 : 0 }}
         transition={{ duration: 0.35, ease: "easeOut" }}
       />
 
@@ -321,10 +326,10 @@ export default function Home() {
             safeLockedIn
               ? `mobile-lockin-active-stage ${
                   safeMode === "pomodoro" ? "pomodoro-lockin-active-stage" : ""
-                } h-full max-h-[100dvh] gap-3 overflow-hidden py-3 sm:gap-4 sm:py-4 md:gap-8 md:py-8 lg:pb-8 lg:pt-16`
-              : `${
-                  safeMode === "clock" ? "mobile-normal-clock-stage" : ""
-                } gap-8 pb-8 pt-2 sm:gap-10`
+                } h-full max-h-[100dvh] gap-5 overflow-hidden py-5 sm:gap-6 sm:py-6 md:gap-8 md:py-8`
+              : safeMode === "clock"
+                ? "mobile-normal-clock-stage gap-6 pb-8 pt-5 sm:gap-8 sm:pb-10 md:gap-10 md:pt-8"
+                : "gap-4 pb-3 pt-3 sm:gap-5 sm:pb-4 md:gap-5 md:pt-4"
           }`}
         >
           <AnimatePresence initial={false} mode="wait">
@@ -337,7 +342,7 @@ export default function Home() {
               className="mobile-lockin-primary flex w-full justify-center"
             >
               {safeMode === "clock" ? (
-                <FlipClock
+                <ClockDisplay
                   is24Hour={is24Hour}
                   accent={theme.accent}
                   isLockedIn={safeLockedIn}

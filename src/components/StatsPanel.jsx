@@ -56,7 +56,7 @@ export default function StatsPanel({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-[80] flex items-end justify-center bg-black/55 px-4 pb-4 backdrop-blur-sm sm:items-center sm:py-8"
+          className="fixed inset-0 z-[80] flex items-end justify-center bg-[#090815]/58 px-4 pb-4 backdrop-blur-[3px] sm:items-center sm:py-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -72,23 +72,25 @@ export default function StatsPanel({
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 26, opacity: 0, scale: 0.98 }}
             transition={{ duration: 0.22, ease: "easeOut" }}
-            className="relative max-h-[84vh] w-full max-w-3xl overflow-hidden rounded-lg border bg-zinc-950/82 shadow-glass backdrop-blur-2xl"
+            className="relative max-h-[86vh] w-full max-w-5xl overflow-hidden rounded-3xl border border-white/[0.35] bg-[rgba(20,10,35,0.35)] shadow-glass backdrop-blur-[4px]"
             style={{
-              borderColor: `${accent}8a`,
-              boxShadow: `0 26px 80px rgba(0, 0, 0, 0.58), 0 0 42px ${accent}22`,
+              WebkitBackdropFilter: "blur(4px) saturate(120%)",
+              boxShadow: `0 24px 70px rgba(0, 0, 0, 0.32), 0 0 34px ${accent}18`,
             }}
           >
-            <div className="flex items-center justify-between gap-4 border-b border-white/10 px-5 py-4">
+            <div className="flex items-center justify-between gap-4 px-5 py-5 sm:px-8 sm:pt-8">
               <div className="flex items-center gap-3">
                 <div
-                  className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-black/20"
+                  className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/12 bg-white/[0.1]"
                   style={{ color: accent }}
                 >
                   <BarChart3 size={20} />
                 </div>
                 <div>
-                  <h2 className="text-lg font-black text-white">Focus Stats</h2>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/42">
+                  <h2 className="text-2xl font-black text-white sm:text-3xl">
+                    Focus Insights
+                  </h2>
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/48">
                     Daily progress
                   </p>
                 </div>
@@ -96,15 +98,15 @@ export default function StatsPanel({
               <button
                 type="button"
                 onClick={onClose}
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.06] text-white/76 transition hover:bg-white/[0.12] focus:outline-none focus:ring-2 focus:ring-white/30"
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-white/12 bg-white/[0.1] text-white/78 transition hover:bg-white/[0.16] focus:outline-none focus:ring-2 focus:ring-white/30"
                 aria-label="Close stats"
               >
                 <X size={18} />
               </button>
             </div>
 
-            <div className="max-h-[66vh] overflow-y-auto p-4">
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="max-h-[66vh] overflow-y-auto px-5 pb-5 sm:px-8 sm:pb-8">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {statCards.map((card) => (
                   <StatCard
                     key={card.label}

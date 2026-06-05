@@ -5,7 +5,7 @@ export default function FavoriteButton({ isFavorite, onToggle, accent }) {
     <button
       type="button"
       onClick={onToggle}
-      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-black/20 text-white/72 backdrop-blur-xl transition hover:scale-105 hover:bg-white/[0.1] focus:outline-none focus:ring-2 focus:ring-white/30"
+      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/12 bg-white/[0.1] text-white/72 backdrop-blur-md transition hover:scale-105 hover:bg-white/[0.16] focus:outline-none focus:ring-2 focus:ring-white/30"
       style={{
         color: isFavorite ? accent : undefined,
         boxShadow: isFavorite ? `0 0 26px ${accent}26` : undefined,

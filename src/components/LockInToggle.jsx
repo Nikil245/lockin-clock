@@ -7,10 +7,10 @@ export default function LockInToggle({ isLockedIn, onToggle, accent, compact = f
     <button
       type="button"
       onClick={onToggle}
-      className="flex h-10 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.075] px-3 text-sm font-bold text-white/82 backdrop-blur-xl transition hover:bg-white/[0.12] focus:outline-none focus:ring-2 focus:ring-white/30"
+      className="flex h-10 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-white/12 bg-white/[0.1] px-4 text-sm font-bold text-white/86 backdrop-blur-md transition hover:bg-white/[0.16] focus:outline-none focus:ring-2 focus:ring-white/30"
       style={{
-        borderColor: isLockedIn ? `${accent}9a` : "rgba(255, 255, 255, 0.1)",
-        boxShadow: isLockedIn ? `0 0 28px ${accent}24` : undefined,
+        borderColor: isLockedIn ? `${accent}9a` : "rgba(255, 255, 255, 0.12)",
+        boxShadow: isLockedIn ? `0 0 30px ${accent}32` : undefined,
       }}
       aria-pressed={isLockedIn}
       aria-label={isLockedIn ? "Exit Lock-in Mode" : "Enter Lock-in Mode"}

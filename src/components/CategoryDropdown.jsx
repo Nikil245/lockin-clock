@@ -16,10 +16,10 @@ export default function CategoryDropdown({
           animate={{ y: 0, opacity: 1, scale: 1 }}
           exit={{ y: -8, opacity: 0, scale: 0.98 }}
           transition={{ duration: 0.18, ease: "easeOut" }}
-          className="absolute left-0 top-[calc(100%+0.6rem)] z-50 w-[calc(100vw-2rem)] max-w-[22rem] overflow-hidden rounded-lg border bg-zinc-950/82 p-1.5 shadow-glass backdrop-blur-2xl sm:left-auto sm:right-0 sm:w-80"
+          className="absolute left-0 top-[calc(100%+0.65rem)] z-50 w-[calc(100vw-2rem)] max-w-[22rem] overflow-hidden rounded-2xl border bg-[#272238]/72 p-1.5 shadow-glass backdrop-blur-md sm:left-auto sm:right-0 sm:w-80"
           style={{
-            borderColor: `${accent}8a`,
-            boxShadow: `0 24px 70px rgba(0, 0, 0, 0.55), 0 0 34px ${accent}26`,
+            borderColor: "rgba(255, 255, 255, 0.16)",
+            boxShadow: `0 24px 70px rgba(0, 0, 0, 0.42), 0 0 34px ${accent}24`,
           }}
         >
           <div className="max-h-80 overflow-y-auto pr-1">
@@ -32,7 +32,7 @@ export default function CategoryDropdown({
                   type="button"
                   onClick={() => onSelect(key)}
                   aria-label={`Select ${theme.label}`}
-                  className="group flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm text-white/78 transition hover:bg-white/[0.09] hover:text-white focus:outline-none focus:ring-2 focus:ring-white/20"
+                  className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-white/78 transition hover:bg-white/[0.1] hover:text-white focus:outline-none focus:ring-2 focus:ring-white/20"
                   style={{
                     backgroundColor: isSelected ? `${theme.accent}18` : undefined,
                     color: isSelected ? "#ffffff" : undefined,
