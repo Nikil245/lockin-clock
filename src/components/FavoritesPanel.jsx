@@ -28,8 +28,9 @@ export default function FavoritesPanel({
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 26, opacity: 0, scale: 0.98 }}
             transition={{ duration: 0.22, ease: "easeOut" }}
-            className="relative max-h-[84vh] w-full max-w-4xl overflow-hidden rounded-3xl border border-white/14 bg-[#252839]/76 shadow-glass backdrop-blur-md"
+            className="relative max-h-[84vh] w-full max-w-4xl overflow-hidden rounded-3xl border border-white/[0.35] bg-[rgba(20,10,35,0.35)] shadow-glass backdrop-blur-[4px]"
             style={{
+              WebkitBackdropFilter: "blur(4px) saturate(120%)",
               boxShadow: `0 30px 90px rgba(0, 0, 0, 0.5), 0 0 46px ${accent}20`,
             }}
           >
@@ -62,7 +63,14 @@ export default function FavoritesPanel({
 
             <div className="max-h-[62vh] overflow-y-auto px-5 pb-5 sm:px-8 sm:pb-8">
               {favorites.length === 0 ? (
-                <div className="quote-glass-card quote-glass-card-compact px-5 py-10 text-center">
+                <div
+                  className="quote-glass-card quote-glass-card-compact px-5 py-10 text-center"
+                  style={{
+                    background: "rgba(20, 10, 35, 0.28)",
+                    backdropFilter: "blur(4px) saturate(120%)",
+                    WebkitBackdropFilter: "blur(4px) saturate(120%)",
+                  }}
+                >
                   <p className="text-base font-semibold text-white/76">
                     No favorite quotes yet. Save one that hits hard.
                   </p>
@@ -73,6 +81,11 @@ export default function FavoritesPanel({
                     <article
                       key={favorite.id}
                       className="quote-glass-card quote-glass-card-compact p-5"
+                      style={{
+                        background: "rgba(20, 10, 35, 0.28)",
+                        backdropFilter: "blur(4px) saturate(120%)",
+                        WebkitBackdropFilter: "blur(4px) saturate(120%)",
+                      }}
                     >
                       <div className="flex items-start gap-3">
                         <div className="min-w-0 flex-1">

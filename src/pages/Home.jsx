@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { X } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import ClockDisplay from "../components/ClockDisplay.jsx";
 import CustomQuoteForm from "../components/CustomQuoteForm.jsx";
@@ -19,6 +20,23 @@ import { useLocalStorage } from "../hooks/useLocalStorage.js";
 import { useQuoteRotator } from "../hooks/useQuoteRotator.js";
 
 const normalizeText = (text) => text.trim().replace(/\s+/g, " ");
+
+const isIOSSafariOutsideStandalone = () => {
+  if (typeof window === "undefined" || typeof navigator === "undefined") {
+    return false;
+  }
+
+  const userAgent = navigator.userAgent;
+  const isIOS = /iphone|ipad|ipod/i.test(userAgent);
+  const isSafari =
+    /safari/i.test(userAgent) &&
+    !/crios|fxios|edgios|opios/i.test(userAgent);
+  const isStandalone =
+    window.navigator.standalone === true ||
+    window.matchMedia?.("(display-mode: standalone)").matches;
+
+  return isIOS && isSafari && !isStandalone;
+};
 
 const sanitizeFavorites = (value) => {
   if (!Array.isArray(value)) return [];
@@ -75,6 +93,7 @@ export default function Home() {
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   const [isAddQuoteOpen, setIsAddQuoteOpen] = useState(false);
   const [isStatsOpen, setIsStatsOpen] = useState(false);
+  const [isIOSInstallHintVisible, setIsIOSInstallHintVisible] = useState(false);
   const [pomodoroCommand, setPomodoroCommand] = useState(null);
   const { enterFullscreen, exitFullscreen, toggleFullscreen } = useFullscreen();
   const {
@@ -206,23 +225,30 @@ export default function Home() {
     [recordMoodUsage, setSelectedCategory],
   );
 
+  const showIOSInstallHint = useCallback(() => {
+    if (isIOSSafariOutsideStandalone()) {
+      setIsIOSInstallHintVisible(true);
+    }
+  }, []);
+
   const toggleLockInMode = useCallback(() => {
     setIsFavoritesOpen(false);
     setIsAddQuoteOpen(false);
     setIsStatsOpen(false);
 
-    setIsLockedIn((currentValue) => {
-      const nextValue = !Boolean(currentValue);
+    const nextValue = !safeLockedIn;
+    setIsLockedIn(nextValue);
 
-      if (nextValue) {
-        enterFullscreen();
-      } else {
-        exitFullscreen();
-      }
-
-      return nextValue;
-    });
-  }, [enterFullscreen, exitFullscreen, setIsLockedIn]);
+    if (nextValue) {
+      enterFullscreen().then((didEnterFullscreen) => {
+        if (!didEnterFullscreen) {
+          showIOSInstallHint();
+        }
+      });
+    } else {
+      exitFullscreen();
+    }
+  }, [enterFullscreen, exitFullscreen, safeLockedIn, setIsLockedIn, showIOSInstallHint]);
 
   const toggleTimeFormat = useCallback(() => {
     setIs24Hour((value) => !value);
@@ -238,10 +264,18 @@ export default function Home() {
     sendPomodoroCommand("reset");
   }, [sendPomodoroCommand]);
 
+  const toggleFullscreenWithHint = useCallback(async () => {
+    const didToggleFullscreen = await toggleFullscreen();
+
+    if (!didToggleFullscreen) {
+      showIOSInstallHint();
+    }
+  }, [showIOSInstallHint, toggleFullscreen]);
+
   useKeyboardShortcuts({
     isPomodoroMode: safeMode === "pomodoro",
     onToggleLockMode: toggleLockInMode,
-    onToggleFullscreen: toggleFullscreen,
+    onToggleFullscreen: toggleFullscreenWithHint,
     onToggleTimeFormat: toggleTimeFormat,
     onPomodoroStartPause: startPausePomodoro,
     onPomodoroReset: resetPomodoro,
@@ -249,8 +283,8 @@ export default function Home() {
 
   return (
     <main
-      className={`relative min-h-[100dvh] overflow-x-hidden bg-[#120b1f] text-white ${
-        safeLockedIn ? "max-h-[100dvh] overflow-hidden" : ""
+      className={`lockin-viewport relative min-h-[100dvh] overflow-x-hidden bg-[#120b1f] text-white ${
+        safeLockedIn ? "lockin-viewport-locked max-h-[100dvh] overflow-hidden" : ""
       }`}
       style={{ "--lockin-accent": theme.accent }}
     >
@@ -267,9 +301,9 @@ export default function Home() {
       />
 
       <div
-        className={`relative z-10 flex flex-col ${
+        className={`lockin-viewport-content relative z-10 flex flex-col ${
           safeLockedIn
-            ? "h-[100dvh] max-h-[100dvh] overflow-hidden"
+            ? "lockin-viewport-content-locked h-[100dvh] max-h-[100dvh] overflow-hidden"
             : "min-h-[100dvh]"
         }`}
       >
@@ -291,6 +325,7 @@ export default function Home() {
                 onFormatToggle={toggleTimeFormat}
                 isLockedIn={safeLockedIn}
                 onToggleLockIn={toggleLockInMode}
+                onFullscreenUnavailable={showIOSInstallHint}
                 onOpenStats={() => setIsStatsOpen(true)}
                 accent={theme.accent}
               />
@@ -393,6 +428,31 @@ export default function Home() {
         mostUsedMood={mostUsedMood}
         accent={theme.accent}
       />
+      <AnimatePresence>
+        {isIOSInstallHintVisible && (
+          <motion.div
+            initial={{ y: 18, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 18, opacity: 0 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            className="ios-install-hint fixed left-1/2 z-50 flex w-[calc(100%-1.5rem)] max-w-sm -translate-x-1/2 items-start gap-3 rounded-2xl border border-white/25 bg-white/[0.12] px-4 py-3 text-sm font-semibold leading-snug text-white/90 shadow-glass backdrop-blur-xl"
+            role="status"
+          >
+            <span className="min-w-0 flex-1">
+              For true fullscreen on iPhone: tap Share → Add to Home Screen → Open
+              as Web App.
+            </span>
+            <button
+              type="button"
+              onClick={() => setIsIOSInstallHintVisible(false)}
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/[0.1] text-white/75 transition hover:bg-white/[0.18] hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30"
+              aria-label="Dismiss iPhone fullscreen guidance"
+            >
+              <X size={15} />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <ShortcutHintPanel accent={theme.accent} isLockedIn={safeLockedIn} />
     </main>
   );

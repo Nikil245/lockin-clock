@@ -18,31 +18,48 @@ export function useFullscreen() {
 
   const enterFullscreen = useCallback(async () => {
     try {
-      if (!document.fullscreenElement) {
-        await document.documentElement.requestFullscreen();
+      if (document.fullscreenElement) {
+        return true;
       }
+
+      const requestFullscreen = document.documentElement?.requestFullscreen;
+
+      if (typeof requestFullscreen !== "function") {
+        return false;
+      }
+
+      await requestFullscreen.call(document.documentElement);
+      return Boolean(document.fullscreenElement);
     } catch {
       // Fullscreen can be blocked unless triggered by a trusted user gesture.
+      return false;
     }
   }, []);
 
   const exitFullscreen = useCallback(async () => {
     try {
-      if (document.fullscreenElement) {
-        await document.exitFullscreen();
+      if (!document.fullscreenElement) {
+        return true;
       }
+
+      if (typeof document.exitFullscreen !== "function") {
+        return false;
+      }
+
+      await document.exitFullscreen();
+      return !document.fullscreenElement;
     } catch {
       // Keep the UI state intact even if the browser rejects the request.
+      return false;
     }
   }, []);
 
   const toggleFullscreen = useCallback(async () => {
     if (document.fullscreenElement) {
-      await exitFullscreen();
-      return;
+      return exitFullscreen();
     }
 
-    await enterFullscreen();
+    return enterFullscreen();
   }, [enterFullscreen, exitFullscreen]);
 
   return {

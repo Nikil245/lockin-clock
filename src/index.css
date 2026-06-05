@@ -24,6 +24,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  min-height: 100dvh;
   background: #05070d;
 }
 
@@ -56,6 +57,29 @@ textarea {
 :focus-visible {
   outline: 2px solid rgba(255, 255, 255, 0.62);
   outline-offset: 3px;
+}
+
+.lockin-viewport,
+.lockin-viewport-content {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.lockin-viewport-locked,
+.lockin-viewport-content-locked {
+  max-height: 100vh;
+  max-height: 100dvh;
+}
+
+.lockin-viewport-content-locked {
+  height: 100vh;
+  height: 100dvh;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.ios-install-hint {
+  bottom: calc(1rem + env(safe-area-inset-bottom));
 }
 
 .timer-display {

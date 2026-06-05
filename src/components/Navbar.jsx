@@ -15,6 +15,7 @@ export default function Navbar({
   onFormatToggle,
   isLockedIn,
   onToggleLockIn,
+  onFullscreenUnavailable,
   onOpenStats,
   accent,
 }) {
@@ -56,7 +57,10 @@ export default function Navbar({
             onToggle={onToggleLockIn}
             accent={accent}
           />
-          <FullscreenButton accent={accent} />
+          <FullscreenButton
+            accent={accent}
+            onFullscreenUnavailable={onFullscreenUnavailable}
+          />
         </div>
       </nav>
     </header>
