@@ -309,7 +309,7 @@ textarea {
   }
 
   .pomodoro-lockin-active-stage .mobile-lockin-pomodoro-timer {
-    font-size: clamp(3.35rem, 13.5dvh, 4.35rem) !important;
+    font-size: clamp(4.5rem, 15.7dvh, 5.2rem) !important;
   }
 
   .pomodoro-lockin-active-stage .mobile-landscape-pomodoro-card p {

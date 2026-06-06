@@ -108,10 +108,17 @@ export default function PomodoroTimer({
     "lockin-pomodoro-cycle-count",
     0,
   );
-  const [isRunning, setIsRunning] = useState(false);
-  const [hasActiveSession, setHasActiveSession] = useState(false);
-  const [remainingSeconds, setRemainingSeconds] = useState(
-    getInitialRemainingSeconds,
+  const [isRunning, setIsRunning] = useLocalStorage(
+    "lockin-pomodoro-is-running",
+    false,
+  );
+  const [hasActiveSession, setHasActiveSession] = useLocalStorage(
+    "lockin-pomodoro-has-active-session",
+    false,
+  );
+  const [remainingSeconds, setRemainingSeconds] = useLocalStorage(
+    "lockin-pomodoro-remaining-seconds",
+    getInitialRemainingSeconds(),
   );
   const [pulse, setPulse] = useState(0);
 
